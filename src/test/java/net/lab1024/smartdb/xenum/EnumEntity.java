@@ -1,26 +1,29 @@
 package net.lab1024.smartdb.xenum;
 
+import net.lab1024.smartdb.annotation.ColumnAlias;
 import net.lab1024.smartdb.annotation.PrimaryKey;
 import net.lab1024.smartdb.annotation.TableAlias;
 import net.lab1024.smartdb.annotation.UseGeneratedKey;
 
 @TableAlias("t_enum")
 public class EnumEntity {
-
-    /**
-     * (最大长度:11,类型:INT)
-     */
     @PrimaryKey
     @UseGeneratedKey
+    // 自增主键id
     private Integer id;
-    /**
-     * (最大长度:50,类型:VARCHAR)
-     */
+    // 用户名
     private String userName;
 
+    // 列名 自定义
+    @ColumnAlias("city")
+    private String area;
+
+    // 枚举： girl 和 boy; 数据库必须为 char、varchar等字符类型
     private Sex sex;
 
+    // 枚举： Level.class 实现了 SmartEnum 接口; 数据库则为 int 等整数类型
     private Level level;
+
 
     @Override
     public boolean equals(Object o) {

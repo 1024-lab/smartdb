@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * @author zhuoda
- * @Date 2020/9/7
  */
 public class SmartDbConfig {
 
