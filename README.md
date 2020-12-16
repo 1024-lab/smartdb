@@ -1,13 +1,20 @@
-### SmartDb设计初衷
-mybatis、hibernate现在已经非常流行，而且也非常好用，笔者也推荐在大型项目中使用mybatis这种框架，但是总有一些场景，mybatis显得有些力不从心，这个时候选择SmartDb是一个不错的选择。
+### SmartDb  卓大观点
+【卓大观点】互联网已经发展了二十年，每个企业均有一定的数字化发展，但随着“产业互联网”，“新基建”，“国产数据库”，“国产开源框架”等时代的到来，越来越多的企业在原有数字化（原有各类数据库）的基础之上，需要再向上构建一层新的数据聚合，以此来适应产业互联网的发展需要。所以当下的系统都会在原有数据库基础之上连接其他两个、甚至多个数据库，故一个支持多数据库、多数据源且轻量级的java数据库中间件是及其需要的! 
+
+ **所以必须有一个能5分钟上手，就可以完美解决多数据库、多数据源问题的框架 。** 
+
+### SmartDb特点
+mybatis现在在国内已经是一家独大，而且也非常好用，笔者也推荐在大型项目中使用mybatis这种框架，但是总有一些场景，mybatis显得有些力不从心，这个时候选择SmartDb是一个不错的选择。
 
 - 在原有mybatis或hibernate连接其他数据库进行一些数据处理
 - 读写分离场景，有些数据需要操作主库，有些操作从库
 - 多数据源场景，要从mysql读出数据，然后进行转换存储到sqlserver中，等等
 - 在一个方法中进行多个数据源的数据库操作
-- 一个简单并追求开发效率的小型项目，例如 [SmartBlog（一个精心雕琢的博客）](https://zhuoluodada.cn "SmartBlog（一个精心雕琢的博客）")
+- 一个简单并追求开发效率的小型项目，例如 [SmartBlog（卓大的官方博客）](https://zhuoluodada.cn "SmartBlog（一个精心雕琢的博客）")
 - 不想使用sharding-sphere,sharding-jdbc, mycat，cobar等重型读写分离框架
 - 等等其他
+
+
 
 基于以上种种，设计了一个支持多数据源、读写分离的轻量级ORM框架:SmartDb, 让使用者有个极致的开发体验。
 
@@ -26,51 +33,45 @@ mybatis、hibernate现在已经非常流行，而且也非常好用，笔者也�
 - 支持代码生成
 - 支持 filter 过滤器
 - 所有类均可扩展
-- 支持Java 6
+- 支持Java 6 ( **收费，收费是为了更好的伺候 “客官 ” ** )
 
-### SmartDb文档
+### SmartDb 文档
+github:  [https://github.com/1024-lab/smartdb](https://github.com/1024-lab/smartdb "https://github.com/1024-lab/smartdb")
 
-github:  [https://github.com/zhuoluodada/smartdb](https://github.com/zhuoluodada/smartdb "https://github.com/zhuoluodada/smartdb")
+gitee:  [https://gitee.com/lab1024/smartdb](https://gitee.com/lab1024/smartdb "https://gitee.com/lab1024/smartdb")
 
-gitee:  [https://gitee.com/zhuoluodada/smartdb](https://gitee.com/zhuoluodada/smartdb "https://gitee.com/zhuoluodada/smartdb")
+官方文档:  [https://zhuoluodada.cn/smartdb](https://zhuoluodada.cn/smartdb "https://zhuoluodada.cn/smartdb")
 
-官方文档：[https://zhuoluodada.cn/article/page/articleList?catalogId=7](https://zhuoluodada.cn/article/page/articleList?catalogId=7 "https://zhuoluodada.cn/article/page/articleList?catalogId=7")
-
+例子:  [https://gitee.com/lab1024/smartdb-demos](https://gitee.com/lab1024/smartdb-demos)
 
 ### SmartDb演示
 #### SmartDb POM
 ```xml
 <dependency>
-	<groupId>cn.zhuoluodada.opensource</groupId>
-	<artifactId>smartdb</artifactId>
-	<version>最新版本</version>
+  <groupId>net.1024lab</groupId>
+  <artifactId>smartdb</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
-#### SmartDb 构建
+
+#### SmartDb 操作多数据源
+在一个方法中操作多个数据库，不用再使用注解切换来切换去，还容易出错， oh yeah~
 ```java
-SmartDb smartDb = 
-	SmartDbBuilder.create()
-	//设置 写库 数据源
-	.setMasterDataSource(writeDataSource)
-	//设置 两个读库 数据源
-	.setSlaveDataSource(readDataSource1,readDataSource2)
-	// 打印 info 级别sql
-	.setShowSql(true)
-	//设置数据库类型
-	.setSupportDatabaseType(SupportDatabaseType.MYSQL)
-	//设置支持spring
-	.setSmartDbExtEnum(SmartDbExtEnum.SPRING4)
-	//表名与类名转换
-	.setTableNameConverter(cls -> "t_" + CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, cls.getSimpleName()))
-	//列名字 转换
-	.setColumnNameConverter(new CaseFormatColumnNameConverter(CaseFormat.LOWER_CAMEL, CaseFormat.LOWER_UNDERSCORE))
-	.build();
+public void multiDatasource(UserEntity userEntity) {
+    // mysqlSmartDb 对象为 连接SqlServer的SmartDb
+    SmartDb mysqlSmartDb = build1(); 
+    // sqlServerSmartDb 对象为 连接SqlServer的SmartDb
+    SmartDb sqlServerSmartDb = build2();
+    // 将数据插入mysql数据库
+    mysqlSmartDb.insert(userEntity);
+    // 将数据插入sql server数据库
+    sqlServerSmartDb.insert(userEntity);
+}
 ```
-
 #### SmartDb ORM操作
-
+支持简单的orm操作
 ```java
-UserEntity userEntity = new UserEntity(1, "smartDb");
+UserEntity userEntity = new UserEntity(1, "zhuoda");
 // 插入
 smartDb.insert(userEntity);
 smartDb.insertSelective(userEntity); // 非空字段插入
@@ -90,27 +91,14 @@ List<UserEntity> userList = smartDb.selectSqlBuilder()
         .queryList(UserEntity.class);
 
 //获取写库
-SmartDb writeSmartDb = smartDb.getWriteSmartDb();
+SmartDb writeSmartDb = smartDb.getMaster();
 //将数据写入主库
 writeSmartDb.insert(userEntity);
 //进行主库其他操作
 writeSmartDb.delete(userEntity);
 writeSmartDb.updateSelective(userEntity);
 ```
-#### SmartDb 操作多数据源
-在一个方法中操作多个数据库， oh yeah~
-```java
-public void multiDatasource() {
-    /**
-     * sqlServerSmartDb 对象为 连接SqlServer的SmartDb
-     * mysqlSmartDb 对象为 连接SqlServer的SmartDb
-     */
-    // 将数据插入mysql数据库
-    mysqlSmartDb.insert(userEntity);
-    // 将数据插入sql server数据库
-    sqlServerSmartDb.insert(userEntity);
-}
-```
+
 #### SmartDb 链式Builder操作
 smartdb为了支持快速开发，支持增删查改四种链式Builder操作
 ##### SmartDb 链式SelectBuilder操作
@@ -164,23 +152,50 @@ smartDb.deleteSqlBuilder()
         .replaceFunctionColumn("login_time","now()")
         .execute();
 ```
+#### 创建 SmartDb 
+```java
+SmartDb smartDb = 
+	SmartDbBuilder.create()
+	//设置 写库 数据源
+	.setMasterDataSource(writeDataSource)
+	//设置 两个读库 数据源
+	.setSlaveDataSource(readDataSource1,readDataSource2)
+	// 打印 info 级别sql
+	.setShowSql(true)
+	//设置数据库类型
+	.setSupportDatabaseType(SupportDatabaseType.MYSQL)
+	//设置支持spring
+	.setSmartDbExtEnum(SmartDbExtEnum.SPRING5)
+	//表名与类名转换
+	.setTableNameConverter(cls -> "t_" + CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, cls.getSimpleName()))
+	//列名字 转换
+	.setColumnNameConverter(new CaseFormatColumnNameConverter(CaseFormat.LOWER_CAMEL, CaseFormat.LOWER_UNDERSCORE))
+	.build();
+```
 
-**等等其他请详细阅读官方文档......**
+
+#### SmartDb 文档
+
+官方文档:  [https://zhuoluodada.cn/smartdb](https://zhuoluodada.cn/smartdb "https://zhuoluodada.cn/smartdb")
+
+例子:  [https://gitee.com/lab1024/smartdb-demos](https://gitee.com/lab1024/smartdb-demos)
 
 ---
-#### 作者
 
-[卓大](https://zhuoluodada.cn)， 1024创新实验室主任，混迹于各个技术圈，研究过计算机，熟悉点java，略懂点前端。
+#### 联系我们 :
+[1024创新实验室](https://www.1024lab.net/)
 
-
-**SmartDb 微信和QQ交流群（加我微信拉你入群！）**
-
-QQ群：1055276240
-
-![](https://images.gitee.com/uploads/images/2020/0416/190000_1efa99f8_5589720.jpeg)![](https://images.gitee.com/uploads/images/2020/0416/190000_8c0fb7c6_5589720.png)
+#### SmartDb微信交流群（**加我微信拉你入群，和小伙伴们一起探讨！**）
+![](https://zhuoluodada.cn/cdn/images/zhuoda/zhuoda-wechat.jpg)
 
 #### 捐赠
 开源不易，感谢捐赠
 >*佛祖保佑捐赠这些人写程序永无bug，工资翻倍，迎娶白富美，走上人生巅峰！*
 
-![](https://images.gitee.com/uploads/images/2020/0416/190000_cb8c44cd_5589720.jpeg)
+![](https://zhuoluodada.cn/cdn/images/zhuoda/zhuoda-wechat-money-v1.jpg)
+
+---
+作者简介:
+[卓大](https://zhuoluodada.cn)， 1024创新实验室主任，混迹于各个技术圈，研究过计算机，熟悉点java，略懂点前端。
+
+
