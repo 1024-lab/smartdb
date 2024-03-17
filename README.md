@@ -50,7 +50,7 @@ gitee:  [https://gitee.com/lab1024/smartdb](https://gitee.com/lab1024/smartdb "h
 <dependency>
   <groupId>net.1024lab</groupId>
   <artifactId>smartdb</artifactId>
-  <version>1.0.0</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
